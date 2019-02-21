@@ -8,6 +8,7 @@
 #  and a little more by Rafael Barrero
 #  and a little more by the ioq3 cr3w
 #  and a little more by woekele for Quake3-UrT  :)
+#  and a little more by travmon for UrT RSM <3
 #
 # GNU Make required
 #
@@ -190,6 +191,15 @@ VERSION=$(shell grep "\#define Q3_VERSION" $(CMDIR)/q_shared.h | \
 #    SVN_VERSION=$(VERSION)
 #endif
 
+# Add git version info
+USE_GIT=
+ifeq ($(wildcard .git),.git)
+  GIT_REV=$(shell git describe --always)
+  ifneq ($(GIT_REV),)
+    VERSION:=$(VERSION)-$(GIT_REV)
+    USE_GIT=1
+  endif
+endif
 
 #############################################################################
 # SETUP AND BUILD -- LINUX
@@ -854,13 +864,13 @@ endif #SunOS
 TARGETS =
 
 ifneq ($(BUILD_SERVER),0)
-  TARGETS += $(B)/Quake3-UrT-Ded.$(ARCH)$(BINEXT)
+  TARGETS += $(B)/UrT-RSM-Ded.$(ARCH)$(BINEXT)
 endif
 
 ifneq ($(BUILD_CLIENT),0)
-  TARGETS += $(B)/Quake3-UrT.$(ARCH)$(BINEXT)
+  TARGETS += $(B)/UrT-RSM.$(ARCH)$(BINEXT)
   ifneq ($(BUILD_CLIENT_SMP),0)
-    TARGETS += $(B)/Quake3-UrT-smp.$(ARCH)$(BINEXT)
+    TARGETS += $(B)/UrT-RSM-smp.$(ARCH)$(BINEXT)
   endif
 endif
 
@@ -984,7 +994,7 @@ endif
 # an informational message, then start building
 targets: makedirs tools
 	@echo ""
-	@echo "Building Quake3-UrT in $(B):"
+	@echo "Building UrT-RSM in $(B):"
 	@echo "  PLATFORM: $(PLATFORM)"
 	@echo "  ARCH: $(ARCH)"
 	@echo "  COMPILE_PLATFORM: $(COMPILE_PLATFORM)"
@@ -1296,12 +1306,12 @@ else
     $(B)/clientsmp/sdl_glimp.o
 endif
 
-$(B)/Quake3-UrT.$(ARCH)$(BINEXT): $(Q3OBJ) $(Q3POBJ) $(LIBSDLMAIN)
+$(B)/UrT-RSM.$(ARCH)$(BINEXT): $(Q3OBJ) $(Q3POBJ) $(LIBSDLMAIN)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) -o $@ $(Q3OBJ) $(Q3POBJ) $(CLIENT_LDFLAGS) \
 		$(LDFLAGS) $(LIBSDLMAIN)
 
-$(B)/Quake3-UrT-smp.$(ARCH)$(BINEXT): $(Q3OBJ) $(Q3POBJ_SMP) $(LIBSDLMAIN)
+$(B)/UrT-RSM-smp.$(ARCH)$(BINEXT): $(Q3OBJ) $(Q3POBJ_SMP) $(LIBSDLMAIN)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) -o $@ $(Q3OBJ) $(Q3POBJ_SMP) $(CLIENT_LDFLAGS) \
 		$(THREAD_LDFLAGS) $(LDFLAGS) $(LIBSDLMAIN)
@@ -1437,7 +1447,7 @@ ifeq ($(HAVE_VM_COMPILED),true)
   endif
 endif
 
-$(B)/Quake3-UrT-Ded.$(ARCH)$(BINEXT): $(Q3DOBJ)
+$(B)/UrT-RSM-Ded.$(ARCH)$(BINEXT): $(Q3DOBJ)
 	$(echo_cmd) "LD $@"
 	$(Q)$(CC) -o $@ $(Q3DOBJ) $(LDFLAGS)
 
@@ -1856,17 +1866,17 @@ copyfiles: release
 	-$(MKDIR) -p -m 0755 $(COPYDIR)/missionpack
 
 ifneq ($(BUILD_CLIENT),0)
-	$(INSTALL) -s -m 0755 $(BR)/Quake3-UrT.$(ARCH)$(BINEXT) $(COPYDIR)/Quake3-UrT.$(ARCH)$(BINEXT)
+	$(INSTALL) -s -m 0755 $(BR)/UrT-RSM.$(ARCH)$(BINEXT) $(COPYDIR)/UrT-RSM.$(ARCH)$(BINEXT)
 endif
 
 # Don't copy the SMP until it's working together with SDL.
 #ifneq ($(BUILD_CLIENT_SMP),0)
-#	$(INSTALL) -s -m 0755 $(BR)/Quake3-UrT-smp.$(ARCH)$(BINEXT) $(COPYDIR)/Quake3-UrT-smp.$(ARCH)$(BINEXT)
+#	$(INSTALL) -s -m 0755 $(BR)/UrT-RSM-smp.$(ARCH)$(BINEXT) $(COPYDIR)/UrT-RSM-smp.$(ARCH)$(BINEXT)
 #endif
 
 ifneq ($(BUILD_SERVER),0)
-	@if [ -f $(BR)/Quake3-UrT-Ded.$(ARCH)$(BINEXT) ]; then \
-		$(INSTALL) -s -m 0755 $(BR)/Quake3-UrT-Ded.$(ARCH)$(BINEXT) $(COPYDIR)/Quake3-UrT-Ded.$(ARCH)$(BINEXT); \
+	@if [ -f $(BR)/UrT-RSM-Ded.$(ARCH)$(BINEXT) ]; then \
+		$(INSTALL) -s -m 0755 $(BR)/UrT-RSM-Ded.$(ARCH)$(BINEXT) $(COPYDIR)/UrT-RSM-Ded.$(ARCH)$(BINEXT); \
 	fi
 endif
 
